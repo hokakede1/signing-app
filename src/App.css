@@ -1,6 +1,7 @@
 .App {
   height: 100vh;
   background: #f3f3f3;
+  overflow: auto;
 }
 
 .signing-pad {
