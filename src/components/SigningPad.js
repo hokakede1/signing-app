@@ -40,10 +40,11 @@ export default function SigningPad({
       <Progress
         value={totalSignatures}
         total={totalPlaceHolders}
+        warning={currentState === "waiting"}
+        success={currentState === "success"}
+        active={true}
         progress="ratio"
-      >
-        {progressState[currentState].processBarMes}
-      </Progress>
+      ></Progress>
       <Message {...progressState[currentState].messageState} />
       <div className="signing-pad">
         <SignatureCanvas

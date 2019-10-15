@@ -100,7 +100,7 @@ class App extends React.Component {
       pdf.drawImage(
         img,
         placeholder.mousePos.x,
-        placeholder.mousePos.y,
+        placeholder.mousePos.y - 20,
         100,
         100
       );
