@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "semantic-ui-react";
+import { Button, Icon } from "semantic-ui-react";
 import SigningPad from "./components/SigningPad";
 import Dropzone from "react-dropzone";
 import PDFJS from "pdfjs-dist";
@@ -10,6 +10,7 @@ import "./App.css";
 class App extends React.Component {
   state = {
     showSigning: false,
+    uploadedFile: false,
     placeholders: [],
     signatures: []
   };
@@ -67,6 +68,7 @@ class App extends React.Component {
           false
         );
       });
+      this.setState({ uploadedFile: true });
     }
   };
 
@@ -128,7 +130,9 @@ class App extends React.Component {
             const page = await pdf.getPage(pageNum);
             const viewport = page.getViewport(1);
             const canvas = document.createElement("canvas");
+            const pageNumber = document.createElement("h5");
             canvas.setAttribute("id", `page-${pageNum}`);
+            pageNumber.innerHTML = pageNum;
             const canvasContainer = document.getElementById("canvas-container");
             const ctx = canvas.getContext("2d");
             const renderContext = {
@@ -139,6 +143,7 @@ class App extends React.Component {
             canvas.height = viewport.height;
             canvas.width = viewport.width;
             canvasContainer.appendChild(canvas);
+            canvasContainer.appendChild(pageNumber);
             page.render(renderContext);
             componentContext.canvasUpdated(pdf.numPages);
           } catch (err) {
@@ -154,36 +159,56 @@ class App extends React.Component {
     fileReader.readAsArrayBuffer(file);
   };
 
+  singingPadToggle = () => {
+    this.setState({ showSigning: !this.state.showSigning });
+  };
+
   render() {
     const { showSigning, placeholders, signatures } = this.state;
     return (
       <div className="App" id="App">
         <br />
-        <Dropzone onDrop={this.handleDrop}>
-          {({ getRootProps, getInputProps }) => (
-            <section>
-              <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                <Button color="blue">Upload</Button>
-              </div>
-            </section>
-          )}
-        </Dropzone>
+        <section className="dropzone-wrapper">
+          <Dropzone onDrop={this.handleDrop}>
+            {({ getRootProps, getInputProps }) => (
+              <section className="drop-box">
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <div>
+                    <h1>
+                      <Icon name="upload"></Icon> Drop a PDF here
+                    </h1>
+                  </div>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+        </section>
 
-        <Button
-          onClick={() => this.setState({ showSigning: !showSigning })}
-          style={{ margin: "20px 0px" }}
-        >
-          Show Signing Pad
-        </Button>
-        <Button onClick={this.packAllPagesToDownload}>Download</Button>
-        {showSigning && (
+        <div className="buttons-wrapper">
+          <Button
+            onClick={this.singingPadToggle}
+            style={{ margin: "20px 0px" }}
+            disabled={
+              !this.state.uploadedFile && this.state.placeholders.length > 0
+            }
+            positive
+          >
+            <Icon name="pencil alternate"></Icon>
+            Show Signing Pad
+          </Button>
+          <Button onClick={this.packAllPagesToDownload} primary>
+            <Icon name="download"></Icon>Download
+          </Button>
           <SigningPad
             onSubmit={this.onSubmitSig}
             totalPlaceHolders={placeholders.length}
             totalSignatures={signatures.length}
+            showSigning={showSigning}
+            onClose={this.singingPadToggle}
           />
-        )}
+        </div>
+
         <div id="canvas-container"></div>
       </div>
     );

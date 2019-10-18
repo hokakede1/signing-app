@@ -1,11 +1,13 @@
 import React, { useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import { Button, Message, Progress } from "semantic-ui-react";
+import { Button, Message, Progress, Modal } from "semantic-ui-react";
 
 export default function SigningPad({
   onSubmit,
   totalPlaceHolders,
-  totalSignatures
+  totalSignatures,
+  showSigning,
+  onClose
 }) {
   const canvasRef = useRef(null);
   const onSubmitSignature = () => {
@@ -36,40 +38,48 @@ export default function SigningPad({
   const currentState = diff === 0 ? "success" : "waiting";
 
   return (
-    <>
-      <Progress
-        value={totalSignatures}
-        total={totalPlaceHolders}
-        warning={currentState === "waiting"}
-        success={currentState === "success"}
-        active={true}
-        progress="ratio"
-      ></Progress>
-      <Message {...progressState[currentState].messageState} />
-      <div className="signing-pad">
-        <SignatureCanvas
-          ref={canvasRef}
-          penColor="black"
-          canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
-        />
-      </div>
-      <br />
-      <Button
-        inverted
-        color="green"
-        onClick={onSubmitSignature}
-        style={{ zIndex: "100" }}
+    <Modal open={showSigning} onClose={onClose}>
+      <Modal.Header>
+        <Progress
+          value={totalSignatures}
+          total={totalPlaceHolders}
+          warning={currentState === "waiting"}
+          success={currentState === "success"}
+          active={true}
+          progress="ratio"
+        ></Progress>
+        <Message {...progressState[currentState].messageState} />
+      </Modal.Header>
+
+      <Modal.Description
+        style={{ border: "none", display: "flex", justifyContent: "center" }}
       >
-        Submit
-      </Button>
-      <Button
-        inverted
-        color="blue"
-        onClick={() => canvasRef.current.clear()}
-        style={{ zIndex: "100" }}
-      >
-        Clear
-      </Button>
-    </>
+        <div className="signing-pad">
+          <SignatureCanvas
+            ref={canvasRef}
+            penColor="black"
+            canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+          />
+        </div>
+      </Modal.Description>
+      <Modal.Actions>
+        <Button
+          inverted
+          color="green"
+          onClick={onSubmitSignature}
+          style={{ zIndex: "100" }}
+        >
+          Submit
+        </Button>
+        <Button
+          inverted
+          color="blue"
+          onClick={() => canvasRef.current.clear()}
+          style={{ zIndex: "100" }}
+        >
+          Clear
+        </Button>
+      </Modal.Actions>
+    </Modal>
   );
 }
