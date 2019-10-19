@@ -10,12 +10,8 @@ export default function SigningPad({
   onClose
 }) {
   const canvasRef = useRef(null);
-  const onSubmitSignature = () => {
-    onSubmit(canvasRef.current.toDataURL("image/png", 1.0));
-    canvasRef.current.clear();
-  };
-
   const diff = totalPlaceHolders - totalSignatures;
+  const currentState = diff === 0 ? "success" : "waiting";
   const progressState = {
     waiting: {
       processBarMes: "Almost Done",
@@ -35,7 +31,10 @@ export default function SigningPad({
     }
   };
 
-  const currentState = diff === 0 ? "success" : "waiting";
+  const onSubmitSignature = () => {
+    onSubmit(canvasRef.current.toDataURL("image/png", 1.0));
+    canvasRef.current.clear();
+  };
 
   return (
     <Modal open={showSigning} onClose={onClose}>
@@ -63,22 +62,35 @@ export default function SigningPad({
         </div>
       </Modal.Description>
       <Modal.Actions>
-        <Button
-          inverted
-          color="green"
-          onClick={onSubmitSignature}
-          style={{ zIndex: "100" }}
-        >
-          Submit
-        </Button>
-        <Button
-          inverted
-          color="blue"
-          onClick={() => canvasRef.current.clear()}
-          style={{ zIndex: "100" }}
-        >
-          Clear
-        </Button>
+        {currentState === "waiting" ? (
+          <>
+            <Button
+              inverted
+              color="green"
+              onClick={onSubmitSignature}
+              style={{ zIndex: "100" }}
+            >
+              Submit
+            </Button>
+            <Button
+              inverted
+              color="blue"
+              onClick={() => canvasRef.current.clear()}
+              style={{ zIndex: "100" }}
+            >
+              Clear
+            </Button>
+          </>
+        ) : (
+          <Button
+            inverted
+            color="red"
+            onClick={onClose}
+            style={{ zIndex: "100" }}
+          >
+            Close
+          </Button>
+        )}
       </Modal.Actions>
     </Modal>
   );

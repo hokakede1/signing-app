@@ -127,23 +127,23 @@ class App extends React.Component {
         // you can now use *pdf* here
         const renderPage = async pageNum => {
           try {
+            const isMobile = window.innerWidth < 600;
             const page = await pdf.getPage(pageNum);
-            const viewport = page.getViewport(1);
+            const viewport = isMobile
+              ? page.getViewport(0.6)
+              : page.getViewport(1);
             const canvas = document.createElement("canvas");
-            const pageNumber = document.createElement("h5");
             canvas.setAttribute("id", `page-${pageNum}`);
-            pageNumber.innerHTML = pageNum;
             const canvasContainer = document.getElementById("canvas-container");
             const ctx = canvas.getContext("2d");
             const renderContext = {
               canvasContext: ctx,
               viewport: viewport
             };
-
             canvas.height = viewport.height;
             canvas.width = viewport.width;
+
             canvasContainer.appendChild(canvas);
-            canvasContainer.appendChild(pageNumber);
             page.render(renderContext);
             componentContext.canvasUpdated(pdf.numPages);
           } catch (err) {
@@ -165,6 +165,10 @@ class App extends React.Component {
 
   render() {
     const { showSigning, placeholders, signatures } = this.state;
+    const showSigningModal = !(
+      this.state.uploadedFile && this.state.placeholders.length > 0
+    );
+
     return (
       <div className="App" id="App">
         <br />
@@ -189,9 +193,7 @@ class App extends React.Component {
           <Button
             onClick={this.singingPadToggle}
             style={{ margin: "20px 0px" }}
-            disabled={
-              !this.state.uploadedFile && this.state.placeholders.length > 0
-            }
+            disabled={showSigningModal}
             positive
           >
             <Icon name="pencil alternate"></Icon>

@@ -4,6 +4,10 @@
   overflow: auto;
 }
 
+img {
+  display: none;
+}
+
 .signing-pad {
   border: 1px solid black;
   background: white;
