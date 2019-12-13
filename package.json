@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "jspdf": "^1.5.3",
     "pdf-lib": "^1.1.1",
     "pdfjs-dist": "^2.2.228",
     "react": "^16.9.0",

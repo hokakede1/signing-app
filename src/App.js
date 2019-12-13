@@ -20,15 +20,17 @@ class App extends React.Component {
   }
 
   packAllPagesToDownload = () => {
-    const finalPDF = new jsPDF();
+    const finalPDF = new jsPDF("p", "mm", "a4");
+    const width = finalPDF.internal.pageSize.getWidth();
+    const height = finalPDF.internal.pageSize.getHeight();
     const canvasContainer = document.getElementById("canvas-container");
     canvasContainer.childNodes.forEach((child, index) => {
-      const imgData = child.toDataURL("image/jpeg", 1.0);
+      const imgData = child.toDataURL("image/png", 1.0);
       if (index === 0) {
-        finalPDF.addImage(imgData, "JPEG", 0, 0);
+        finalPDF.addImage(imgData, "PNG", 0, 0, width, height);
       } else {
         const newPage = finalPDF.addPage();
-        newPage.addImage(imgData, "JPEG", 0, 0);
+        newPage.addImage(imgData, "PNG", 0, 0, width, height);
       }
     });
     finalPDF.save("download.pdf");
@@ -99,11 +101,24 @@ class App extends React.Component {
     document.getElementById("App").appendChild(img);
 
     img.onload = () => {
+      function scaleIt(source, scaleFactor) {
+        var c = document.createElement("canvas");
+        var ctx = c.getContext("2d");
+        var w = source.width * scaleFactor;
+        var h = source.height * scaleFactor;
+        c.width = w;
+        c.height = h;
+        ctx.drawImage(source, 0, 0, w, h);
+        return c;
+      }
+
+      var c1 = scaleIt(img, 0.6);
+
       pdf.drawImage(
-        img,
+        c1,
         placeholder.mousePos.x,
         placeholder.mousePos.y - 20,
-        100,
+        200,
         100
       );
     };
