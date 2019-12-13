@@ -20,7 +20,7 @@ class App extends React.Component {
   }
 
   packAllPagesToDownload = () => {
-    const finalPDF = new jsPDF("p", "mm", "a4");
+    const finalPDF = new jsPDF("p", "mm", "letter");
     const width = finalPDF.internal.pageSize.getWidth();
     const height = finalPDF.internal.pageSize.getHeight();
     const canvasContainer = document.getElementById("canvas-container");
@@ -142,11 +142,9 @@ class App extends React.Component {
         // you can now use *pdf* here
         const renderPage = async pageNum => {
           try {
-            const isMobile = window.innerWidth < 600;
+// might need a new solution for Mobile
             const page = await pdf.getPage(pageNum);
-            const viewport = isMobile
-              ? page.getViewport(0.6)
-              : page.getViewport(1);
+            const viewport = page.getViewport(3);
             const canvas = document.createElement("canvas");
             canvas.setAttribute("id", `page-${pageNum}`);
             const canvasContainer = document.getElementById("canvas-container");
